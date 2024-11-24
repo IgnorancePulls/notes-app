@@ -29,4 +29,16 @@ const createNote = async (newNote: Omit<Note, 'id'>): Promise<Note> => {
     }
 };
 
-export { fetchNotes, fetchNote, createNote };
+const updateNote = async (note: Note) => {
+    const { id, ...updatedNote} = note;
+    const encodedNote = JSON.stringify(updatedNote);
+
+    const { data } = await apiClient.put(`/notes/${id}`, { body: encodedNote });
+
+    return {
+        id: data.id,
+        ...JSON.parse(data.body),
+    }
+}
+
+export { fetchNotes, fetchNote, createNote, updateNote };
