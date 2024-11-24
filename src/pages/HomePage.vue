@@ -28,7 +28,7 @@ const error = ref<string | null>(null);
 
 const notes = computed(() => notesStore.notes);
 
-async function addNote() {
+const addNote = async () => {
   try {
     const id = await notesStore.createNewNote();
     await router.push(`/note/${id}`);
@@ -37,7 +37,7 @@ async function addNote() {
   }
 }
 
-async function goToNote(id: string) {
+const goToNote = async(id: string) => {
   await router.push(`/note/${id}`);
 }
 

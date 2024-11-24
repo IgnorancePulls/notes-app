@@ -1,15 +1,20 @@
 import { defineStore } from 'pinia';
 import { ref } from "vue";
 import { Note } from "@/types/note.ts";
-import {fetchNote} from "@/api/notes.ts";
+import {fetchNote, updateNote} from "@/api/notes.ts";
 
 const useNoteStore = defineStore('note', () => {
     const currentNote = ref<Note | null>(null);
     const isLoading = ref<boolean>(false);
 
-    const updateNote = (text: string): void => {
+    const saveNote = async (text: string): Promise<void> => {
+
         if(currentNote.value) {
-            currentNote.value.text = text;
+            const updatedNote: Note = {
+                ...currentNote.value,
+                text,
+            }
+            await updateNote(updatedNote);
         }
     };
 
@@ -22,7 +27,7 @@ const useNoteStore = defineStore('note', () => {
 
     return {
         currentNote,
-        updateNote,
+        saveNote,
         loadNote,
         isLoading
     }
