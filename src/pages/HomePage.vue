@@ -10,7 +10,7 @@
           :key="note.id"
           @click="goToNote(note.id)"
       >
-        {{ note.body }}
+        {{ note.last_updated_at }}
       </li>
     </ul>
     <div v-else>Error</div>
@@ -19,10 +19,10 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import { useNotesStore } from '@/store/useNotesStore';
+import { useNotesListStore } from '@/store/useNotesListStore.ts';
 import { useRouter } from 'vue-router';
 
-const notesStore = useNotesStore();
+const notesStore = useNotesListStore();
 const router = useRouter();
 const error = ref<string | null>(null);
 
