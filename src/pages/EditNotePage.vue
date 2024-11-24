@@ -16,7 +16,7 @@
 
 <script setup>
 import { useNotesStore } from '@/store/useNotesStore';
-import { onMounted, computed } from 'vue';
+import { onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 
 const notesStore = useNotesStore();
@@ -25,9 +25,9 @@ const router = useRouter();
 const route = useRoute();
 const noteId = route.params.id;
 
-const note = computed(() =>
-    notesStore.notes.find((n) => n.id === noteId)
-);
+const note = computed(() => {
+  return notesStore.notes.find((n) => String(n.id) === noteId);
+});
 
 function saveNote() {
   if (note.value) {
@@ -40,7 +40,7 @@ function goBack() {
 }
 
 onMounted(() => {
-  if (note.value.body === null) {
+  if (note?.value?.text === null) {
     router.push('/');
   }
 });

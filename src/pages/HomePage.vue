@@ -4,7 +4,7 @@
       <h1>Notes</h1>
       <button @click="addNote">Add Note</button>
     </header>
-    <ul>
+    <ul v-if="!error">
       <li
           v-for="note in notes"
           :key="note.id"
@@ -13,27 +13,39 @@
         {{ note.body }}
       </li>
     </ul>
+    <div v-else>Error</div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { computed, onMounted, ref } from 'vue';
 import { useNotesStore } from '@/store/useNotesStore';
 import { useRouter } from 'vue-router';
-import { v4 as uuidv4 } from 'uuid';
 
 const notesStore = useNotesStore();
 const router = useRouter();
+const error = ref<string | null>(null);
 
-const notes = notesStore.notes;
+const notes = computed(() => notesStore.notes);
 
-function addNote() {
-  const newNote = { id: uuidv4(), body: '' };
-  notesStore.addNote(newNote);
-  router.push(`/note/${newNote.id}`);
+async function addNote() {
+  try {
+    const id = await notesStore.createNewNote();
+    await router.push(`/note/${id}`);
+  } catch (e) {
+    error.value = 'Failed to add note';
+  }
 }
 
-function goToNote(id) {
-  router.push(`/note/${id}`);
+async function goToNote(id: string) {
+  await router.push(`/note/${id}`);
 }
 
+onMounted(async () => {
+  try {
+    await notesStore.loadNotes();
+  } catch (e) {
+    error.value = 'Failed to load notes';
+  }
+});
 </script>
