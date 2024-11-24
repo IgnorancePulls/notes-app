@@ -1,4 +1,5 @@
 export interface Note {
     id: string;
-    body: string;
+    text: string;
+    last_updated_at: string;
 }
