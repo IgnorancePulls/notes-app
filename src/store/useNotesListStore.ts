@@ -3,10 +3,10 @@ import { defineStore } from 'pinia';
 import { ref, computed } from "vue";
 
 import { Note } from "../types/note.ts";
-import { fetchNotes, createNote } from "../../api/notes.ts";
+import { fetchNotes, createNote } from "@/api/notes.ts";
 import { formatDate } from "@/utils/formate-date.ts";
 
-const useNotesStore = defineStore('notes', () => {
+const useNotesListStore = defineStore('notesList', () => {
     const notes = ref<Note[]>([]);
 
     const allNotes = computed(() => notes.value);
@@ -45,4 +45,4 @@ const useNotesStore = defineStore('notes', () => {
     };
 });
 
-export { useNotesStore };
+export { useNotesListStore };

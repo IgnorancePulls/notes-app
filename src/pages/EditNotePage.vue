@@ -15,33 +15,35 @@
 </template>
 
 <script setup>
-import { useNotesStore } from '@/store/useNotesStore';
 import { onMounted, computed, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
+import { useNoteStore} from "@/store/useNoteStore.ts";
 
-const notesStore = useNotesStore();
+const noteStore = useNoteStore();
 
 const router = useRouter();
 const route = useRoute();
 const noteId = route.params.id;
 
 const note = computed(() => {
-  return notesStore.notes.find((n) => String(n.id) === noteId);
+  return noteStore.currentNote;
 });
-
-function saveNote() {
-  if (note.value) {
-    notesStore.updateNote(noteId, note.body);
-  }
-}
 
 function goBack() {
   router.push('/');
 }
 
-onMounted(() => {
-  if (note?.value?.text === null) {
-    router.push('/');
+onMounted(async () => {
+  try {
+    if(noteId){
+      await noteStore.loadNote(noteId);
+    }
+
+  } catch (error) {
+    console.error('Failed to fetch the note:', error);
+    //ToDo redirect to 404 page
+  } finally {
+   //ToDo add loading state
   }
 });
 </script>
