@@ -1,28 +1,23 @@
 import { defineStore } from 'pinia';
 
-import { ref, computed } from "vue";
+import { ref } from "vue";
 
 import { Note } from "../types/note.ts";
 import { fetchNotes, createNote } from "@/api/notes.ts";
-import { formatDate } from "@/utils/formate-date.ts";
 
 const useNotesListStore = defineStore('notesList', () => {
     const notes = ref<Note[]>([]);
-
-    const allNotes = computed(() => notes.value);
-    const addNote = (note: Note): void => {
-        notes.value.push(note);
-    };
+    const isLoading = ref<boolean>(false);
 
     const createNewNote = async (): Promise<string> => {
         const newNote = {
             text: '',
-            last_updated_at: formatDate(new Date())
+            last_updated_at: new Date()
         }
 
         const res = await createNote(newNote);
 
-        addNote(res);
+        notes.value.push(res);
         return res.id;
     }
 
@@ -32,16 +27,17 @@ const useNotesListStore = defineStore('notesList', () => {
     };
 
     const loadNotes = async (): Promise<void> => {
+        isLoading.value = true;
         notes.value = await fetchNotes();
+        isLoading.value = false;
     };
 
     return {
         notes,
-        allNotes,
-        addNote,
         updateNote,
         loadNotes,
-        createNewNote
+        createNewNote,
+        isLoading
     };
 });
 

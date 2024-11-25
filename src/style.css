@@ -3,8 +3,6 @@
   line-height: 1.5;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
 
   font-synthesis: none;
@@ -25,9 +23,12 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background: #fff;
 }
 
 h1 {
@@ -36,33 +37,50 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
   font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-button:hover {
-  border-color: #646cff;
+
+button:disabled {
+  cursor: not-allowed;
+  background-color: #ccc;
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+
+button:hover:not(:disabled) {
+  background-color: #0056b3;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
+
+button:active:not(:disabled) {
+  background-color: #004085;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
 
 .card {
   padding: 2em;
 }
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  max-width: 1920px;
+  width: 100%;
   text-align: center;
+  height: 100%;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 }
 
 @media (prefers-color-scheme: light) {
