@@ -5,9 +5,9 @@
   </header>
   <NotesListSpinner v-if="isLoading"/>
   <div v-if="!isLoading && error">Error</div>
-  <ol v-if="!error && !isLoading" class="notesList">
+  <div v-if="!error && !isLoading" class="notesList">
     <NoteCard v-for="note in notes" :key="note.id" :note="note" @click="goToNote(note.id)" />
-  </ol>
+  </div>
 </template>
 
 <script setup lang="ts">
