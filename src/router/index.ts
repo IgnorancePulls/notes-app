@@ -12,7 +12,6 @@ const routes = [
         path: '/note/:id',
         name: 'EditNotePage',
         component: EditNotePage,
-        props: true,
     },
 ];
 

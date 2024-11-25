@@ -49,14 +49,11 @@ const lastUpdate = computed(() => formatDate(note.last_updated_at));
 
 .noteText {
   text-align: left;
-  line-height: 1.5;            /* Adjust line height for readability */
-  max-height: calc(1.5em * 5); /* 3 lines of text (line-height * lines) */
-  overflow: hidden;            /* Hide overflowing content */
-  display: -webkit-box;        /* Required for line-clamp */
-  -webkit-line-clamp: 5;       /* Clamp text after 3 lines */
+  line-height: 1.5;
+  max-height: calc(1.5em * 5);
+  overflow: hidden;
+  display: -webkit-box;
   -webkit-box-orient: vertical;
-
-
   white-space: normal;
   word-break: break-word;
   overflow-wrap: break-word;
