@@ -8,11 +8,11 @@ const useNoteStore = defineStore('note', () => {
     const isLoading = ref<boolean>(false);
     const isNoteSaving = ref<boolean>(false);
 
-    const updateCurrentNote = async (text: string): Promise<void> => {
+    const updateCurrentNote = async (note: Partial<Note>): Promise<void> => {
         if(currentNote.value) {
             const updatedNote: Note = {
                 ...currentNote.value,
-                text,
+                ...note,
             }
             isNoteSaving.value = true;
             await updateNote(updatedNote);

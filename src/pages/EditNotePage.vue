@@ -6,13 +6,21 @@
       <button @click="goBack">Back</button>
     </div>
   </header>
-  <textarea
-      class="note-editor"
-      v-if="note"
-      v-model="note.text"
-      @input="handleInput"
-      placeholder="Write your note here..."
-  ></textarea>
+  <div class="titleWrapper">
+    <p class="label">Title:</p>
+    <input class="titleInput" v-if="note" v-model="note.title" @input="handleTitleInput"/>
+  </div>
+  <div class="contentWrapper">
+    <p class="label">Text:</p>
+    <textarea
+        class="noteEditor"
+        v-if="note"
+        v-model="note.text"
+        @input="handleInput"
+        placeholder="Write your note here..."
+    />
+  </div>
+
   <PageSpinner v-if="isLoading"/>
 </template>
 
@@ -38,14 +46,33 @@ const goBack = () => {
   router.push('/');
 }
 
+defineProps({
+  id: {
+    type: String,
+    required: true,
+  },
+});
+
 const handleInput = debounce(async ( event) => {
-  //ToDo add is loading
   const text = event.target.value;
 
+  //ToDo add characters limit
+
   try {
-    await noteStore.updateCurrentNote(text);
-  } finally {
-    //ToDo add is loading
+    await noteStore.updateCurrentNote({text});
+  } catch (e) {
+    //ToDo add error handling
+  }
+}, 500);
+
+const handleTitleInput = debounce(async (event) => {
+  //ToDo add characters limit
+  const title = event.target.value;
+
+  try {
+    await noteStore.updateCurrentNote({title});
+  } catch (e) {
+    //ToDo add error handling
   }
 }, 500);
 
@@ -61,6 +88,7 @@ const saveNote = async () => {
 onMounted(async () => {
   try {
     if(noteId){
+      //ToDo load note from the store first
       await noteStore.loadNote(noteId);
     }
 
@@ -84,7 +112,31 @@ onMounted(async () => {
   border-bottom: 1px solid #ccc;
 }
 
-.note-editor {
+.titleWrapper {
+  margin: 32px;
+}
+
+.label {
+  display: flex;
+  margin: 0 0 8px 0;
+}
+
+.titleInput {
+  font-size: 16px;
+  resize: none;
+  outline: none;
+  border: 1px solid #ccc;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.contentWrapper {
+  margin: 0 32px 32px;
+}
+
+.noteEditor {
   height: 400px;
   padding: 16px;
   font-size: 16px;
@@ -92,7 +144,8 @@ onMounted(async () => {
   outline: none;
   border: 1px solid #ccc;
   box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
-  margin: 32px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .actionButtons {
