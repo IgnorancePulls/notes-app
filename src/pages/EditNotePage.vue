@@ -73,7 +73,6 @@ const restoreCursorPosition = () => {
   const selection = window.getSelection();
   if (selection) {
     selection.removeAllRanges();
-    console.log('cursorPosition.value', cursorPosition.value);
     selection.addRange(cursorPosition.value);
   }
 };
@@ -126,7 +125,6 @@ const handleBackSpace = (event: KeyboardEvent) => {
       event.preventDefault();
 
       mentionNode.remove();
-
 
       if (mentionNode.nextSibling) {
         range.setStart(mentionNode.nextSibling, 0);
