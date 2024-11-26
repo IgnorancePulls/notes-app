@@ -79,6 +79,13 @@ input {
   box-sizing: border-box;
 }
 
+.mention {
+  background: #007bff;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 6px;
+  padding: 4px;
+}
 
 .card {
   padding: 2em;

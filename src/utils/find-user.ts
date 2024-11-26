@@ -1,8 +1,8 @@
 import {User} from "@/types/user.ts";
 import { getRelevanceScore } from "@/utils/get-relevance-score.ts";
 
-const findRelevantUsers = (query: string, users: User[]) => {
-    if (!query) return [];
+const findRelevantUsers = (query: string, users: User[] | null) => {
+    if (!query || !users) return [];
 
     return users
         .map((user) => ({

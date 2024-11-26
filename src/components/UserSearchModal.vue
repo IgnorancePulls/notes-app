@@ -1,50 +1,73 @@
 <template>
   <div v-if="isModalVisible" class="modal-overlay">
     <div class="modal">
-      <button @click="onClose">Close</button>
+      <button @click="handleClose" class="close-modal-btn">Close</button>
       <input
           type="text"
           v-model="searchQuery"
           placeholder="Type user name"
           class="search-input"
           @input="handleSearch"
+          ref="inputRef"
       />
-      <ul class="user-list">
-        <li
+      <div class="user-list" v-if="filteredUsers.length">
+        <div
             v-for="user in filteredUsers"
             :key="user.username"
             class="user-item"
-            @click="onUserClick(user)"
+            @click="handleUserClick(user)"
         >
           {{ user.first_name }} {{ user.last_name }}
-        </li>
-      </ul>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 
-<script setup>
-import {computed, onMounted, ref, watch} from 'vue';
+<script setup lang="ts">
+import {computed, onMounted, ref, watch, nextTick} from 'vue';
 
 import { useUsersStore } from "@/store/useUsersStore.ts";
 import { findRelevantUsers } from "@/utils/find-user.ts";
+import { User } from "@/types/user.ts";
 
 const usersStore = useUsersStore();
 const searchQuery = ref('');
+const inputRef = ref<HTMLInputElement | null>(null);
 
 const filteredUsers = computed(() => {
   return findRelevantUsers(searchQuery.value, usersStore.usersList.value);
 })
 
-const {isModalVisible} = defineProps({
+const {isModalVisible, onClose, onUserClick } = defineProps({
   isModalVisible: Boolean,
   onClose: Function,
   onUserClick: Function,
 });
 
-const handleSearch = (event) => {
-  searchQuery.value = event.target.value;
+const resetState = () => {
+  searchQuery.value = '';
+  filteredUsers.value = [];
+}
+
+const handleClose = () => {
+  resetState();
+  if(onClose) {
+    onClose();
+  }
+}
+
+const handleUserClick = (user: User) => {
+  resetState();
+  if(onUserClick) {
+    onUserClick(user);
+  }
+}
+
+const handleSearch = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  searchQuery.value = target.value;
 };
 
 // Watch for modal visibility changes
@@ -57,7 +80,15 @@ watch(() => isModalVisible, (newValue) => {
 });
 
 onMounted(async () => {
- await usersStore.getUsersList()
+  await usersStore.getUsersList()
+})
+
+watch(()=> isModalVisible, (newValue) => {
+  if (newValue) {
+    nextTick(() => {
+      inputRef.value && inputRef.value.focus();
+    })
+  }
 })
 </script>
 
@@ -85,6 +116,7 @@ onMounted(async () => {
   text-align: center;
   max-width: 400px;
   width: 100%;
+  position: relative;
 }
 
 button {
@@ -103,5 +135,32 @@ button:hover {
 
 button:focus {
   outline: none;
+}
+
+.user-list {
+  min-height: 120px;
+  margin-top: 10px;
+  position: absolute;
+  background: #fff;
+  left: 0;
+  right: 0;
+  border-radius: 4px;
+  padding: 20px;
+}
+
+.user-item {
+  text-align: left;
+  padding: 4px 16px;
+  &:hover {
+    background-color: #f5f5f5;
+    cursor: pointer;
+  }
+}
+
+.close-modal-btn {
+  margin-top: 0;
+  margin-left: auto;
+  display: block;
+  margin-bottom: 8px;
 }
 </style>

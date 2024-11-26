@@ -2,7 +2,7 @@
   <div class="note-card" v-if="note">
     <h2 class="noteTitle">{{ note.title || 'Untitled' }}</h2>
     <span class="lastUpdate">Last update: {{ lastUpdate }}</span>
-    <p class="noteText">{{ note.text }}</p>
+    <p class="noteText" v-html="note.text"/>
 
   </div>
 </template>
