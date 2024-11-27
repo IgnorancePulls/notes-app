@@ -12,7 +12,6 @@ import { Note } from "@/types/note.js";
 import { computed } from 'vue';
 import { formatDate } from "@/utils/formate-date.ts";
 
-
 const { note } = defineProps<{
   note: Note;
 }>();
@@ -54,6 +53,7 @@ const lastUpdate = computed(() => formatDate(note.last_updated_at));
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
+  line-clamp: 5;
   white-space: normal;
   word-break: break-word;
   overflow-wrap: break-word;

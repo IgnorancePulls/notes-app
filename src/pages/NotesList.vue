@@ -3,9 +3,9 @@
     <h1>Notes</h1>
     <button @click="addNote">Add Note</button>
   </header>
-  <NotesListSpinner v-if="isLoading"/>
-  <div v-if="!isLoading && error">Error</div>
-  <div v-if="!error && !isLoading" class="notesList">
+  <ErrorMessage :errorMessage="errorMessage"/>
+  <NotesListSpinner v-if="isLoading && !errorMessage"/>
+  <div v-if="!errorMessage && !isLoading" class="notesList">
     <NoteCard v-for="note in notes" :key="note.id" :note="note" @click="goToNote(note.id)" />
   </div>
 </template>
@@ -16,20 +16,22 @@ import { useNotesListStore } from '@/store/useNotesListStore.ts';
 import { useRouter } from 'vue-router';
 import NoteCard from "@/components/NoteCard.vue";
 import NotesListSpinner from "@/components/PageSpinner.vue";
+import ErrorMessage from "@/components/ErrorMessage.vue";
 
 const notesStore = useNotesListStore();
 const router = useRouter();
-const error = ref<string | null>(null);
+const errorMessage = ref<string>('');
 
 const notes = computed(() =>  [...notesStore.notes].sort((a, b) => new Date(b.last_updated_at).getTime() -  new Date(a.last_updated_at).getTime()));
 const isLoading = computed(() => notesStore.isLoading);
 
 const addNote = async () => {
   try {
+    errorMessage.value = '';
     const id = await notesStore.createNewNote();
     await router.push(`/note/${id}`);
   } catch (e) {
-    error.value = 'Failed to add note';
+    errorMessage.value = 'Failed to add note';
   }
 }
 
@@ -39,10 +41,10 @@ const goToNote = async(id: string) => {
 
 onMounted(async () => {
   try {
+    errorMessage.value = '';
     await notesStore.loadNotes();
   } catch (e) {
-    //ToDo handle error
-    error.value = 'Failed to load notes';
+    errorMessage.value = 'Failed to load notes';
   }
 });
 </script>
