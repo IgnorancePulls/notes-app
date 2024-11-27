@@ -1,11 +1,17 @@
 <template>
-  <div class="note-card" v-if="note">
-    <h2 class="noteTitle">{{ note.title || 'Untitled' }}</h2>
-    <span class="lastUpdate">Last update: {{ lastUpdate }}</span>
-    <p class="noteText" v-html="note.text"/>
-
+  <div
+      class="border border-gray-200 rounded-lg shadow-md p-6 bg-white hover:shadow-lg transition-shadow duration-200 cursor-pointer min-h-[200px]"
+      v-if="note"
+  >
+    <h2 class="text-lg font-semibold text-gray-800 truncate">{{ note.title || 'Untitled' }}</h2>
+    <span class="text-sm text-gray-500 block mt-1">Last update: {{ lastUpdate }}</span>
+    <p
+        class="text-gray-700 text-sm mt-4 line-clamp-5 text-left"
+        v-html="note.text"
+    />
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { Note } from "@/types/note.js";
@@ -53,7 +59,7 @@ const lastUpdate = computed(() => formatDate(note.last_updated_at));
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  line-clamp: 5;
+  -webkit-line-clamp: 5;
   white-space: normal;
   word-break: break-word;
   overflow-wrap: break-word;

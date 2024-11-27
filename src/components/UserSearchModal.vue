@@ -1,23 +1,43 @@
 <template>
-  <div v-if="isModalVisible" class="modal-overlay">
-    <div class="modal">
-      <button @click="handleClose" class="close-modal-btn">Close</button>
-      <input
-          type="text"
-          v-model="searchQuery"
-          placeholder="Type user name"
-          class="search-input"
-          @input="handleSearch"
-          ref="inputRef"
-      />
-      <div class="user-list" v-if="filteredUsers.length">
-        <div
-            v-for="user in filteredUsers"
-            :key="user.username"
-            class="user-item"
-            @click="handleUserClick(user)"
+  <div
+      v-if="isModalVisible"
+      class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+  >
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+      <div class="flex justify-end">
+        <button
+            @click="handleClose"
+            class="inline-flex items-center justify-center px-4 py-2 text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 active:bg-blue-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            aria-label="Close"
         >
-          {{ user.first_name }} {{ user.last_name }}
+          Close
+        </button>
+      </div>
+      <div class="mt-4 relative">
+        <input
+            type="text"
+            v-model="searchQuery"
+            placeholder="Type user name"
+            class="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500"
+            @input="handleSearch"
+            ref="inputRef"
+        />
+        <div
+            v-if="filteredUsers.length"
+            class="absolute left-0 right-0 mt-1 bg-white border border-gray-300 rounded-lg shadow-lg z-10"
+        >
+          <ul>
+            <li
+                v-for="user in filteredUsers"
+                :key="user.username"
+                class="p-3 hover:bg-blue-50 cursor-pointer text-left"
+                @click="handleUserClick(user)"
+            >
+              <span class="font-medium text-gray-800"
+              >{{ user.first_name }} {{ user.last_name }}</span
+              >
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -69,12 +89,11 @@ const handleSearch = (event: Event) => {
   searchQuery.value = target.value;
 };
 
-// Watch for modal visibility changes
 watch(() => isModalVisible, (newValue) => {
   if (newValue) {
-    document.body.style.overflow = 'hidden'; // Disable scrolling
+    document.body.style.overflow = 'hidden';
   } else {
-    document.body.style.overflow = ''; // Restore scrolling
+    document.body.style.overflow = '';
   }
 });
 
@@ -90,76 +109,3 @@ watch(()=> isModalVisible, (newValue) => {
   }
 })
 </script>
-
-<style scoped>
-/* Overlay to cover the entire page */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Dark transparent overlay */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-/* Modal content */
-.modal {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  max-width: 400px;
-  width: 100%;
-  position: relative;
-}
-
-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-button:focus {
-  outline: none;
-}
-
-.user-list {
-  min-height: 120px;
-  margin-top: 10px;
-  position: absolute;
-  background: #fff;
-  left: 0;
-  right: 0;
-  border-radius: 4px;
-  padding: 20px;
-}
-
-.user-item {
-  text-align: left;
-  padding: 4px 16px;
-  &:hover {
-    background-color: #f5f5f5;
-    cursor: pointer;
-  }
-}
-
-.close-modal-btn {
-  margin-top: 0;
-  margin-left: auto;
-  display: block;
-  margin-bottom: 8px;
-}
-</style>

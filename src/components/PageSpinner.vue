@@ -1,33 +1,5 @@
 <template>
-  <div class="spinner-container">
-    <div class="spinner"></div>
+  <div class="flex items-center justify-center w-full h-fullm flex-1">
+    <div class="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-solid border-gray-200"></div>
   </div>
 </template>
-
-<style scoped>
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid #ccc;
-  border-top: 4px solid #3498db;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-.spinner-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: auto;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-</style>

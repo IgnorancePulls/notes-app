@@ -1,6 +1,6 @@
 <template>
-  <div class="notification-error" v-if="errorMessage">
-    <p class="notificationMessage">{{errorMessage}}</p>
+  <div v-if="errorMessage" class="my-4 p-4 bg-red-50 border border-red-200 text-red-800 rounded-lg shadow-sm animate-fade-in">
+    <p class="font-medium text-center">{{ errorMessage }}</p>
   </div>
 </template>
 
@@ -12,27 +12,19 @@ defineProps<{
 
 </script>
 <style scoped>
-.notification-error {
-  margin: 1rem 0;
-  padding: 1rem;
-  color: #fff;
-  background-color: #d32f2f; /* Red background for error */
-  border: 1px solid #b71c1c; /* Darker red border */
-  border-radius: 4px;
-  font-size: 1rem;
-  text-align: center;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-5px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-in-out;
+}
+
 </style>

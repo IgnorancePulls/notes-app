@@ -32,7 +32,6 @@ const createNote = async (newNote: Omit<Note, 'id'>): Promise<Note> => {
 const updateNote = async (note: Note) => {
     const { id, ...updatedNote} = note;
     const encodedNote = JSON.stringify(updatedNote);
-
     const { data } = await apiClient.put(`/notes/${id}`, { body: encodedNote });
 
     return {

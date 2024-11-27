@@ -4,39 +4,54 @@
       :onClose="handleCloseModal"
       :onUserClick="handleUserSelect"
   />
-  <header class="header">
-    <h1>Edit Note</h1>
-    <div class="actionButtons">
-      <HeaderButton :loading="isNoteSaving" :disabled="isNoteSaving" @click="saveNote">
-        Save note
-      </HeaderButton>
-      <button @click="goBack">Back</button>
+  <header class="top-0 bg-white shadow-md border-b border-gray-200">
+    <div class="container mx-auto flex justify-between items-center py-4 px-6">
+      <h1 class="text-3xl font-extrabold text-blue-600 tracking-wide">Edit Note</h1>
+      <div class="flex gap-4">
+        <HeaderButton :loading="isNoteSaving" :disabled="isNoteSaving" @click="saveNote">
+          Save Note
+        </HeaderButton>
+        <button
+            @click="goBack"
+            class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed"
+        >
+          Back
+        </button>
+      </div>
     </div>
   </header>
-  <ErrorMessage :errorMessage="errorMessage"/>
-  <div class="titleWrapper" v-if="!isLoading">
-    <p class="label">Title:</p>
-    <input
-        class="titleInput"
-        v-if="note"
-        v-model="note.title"
-        @input="handleTitleInput"
-    />
+
+    <ErrorMessage :errorMessage="errorMessage" />
+  <div class="container mx-auto px-6 mt-8" v-if="!isLoading">
+    <div>
+      <p class="text-gray-700 text-sm font-medium mb-2 text-left">Title:</p>
+      <input
+          v-if="note"
+          v-model="note.title"
+          @input="handleTitleInput"
+          class="block w-full p-3 text-gray-700 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500"
+      />
+    </div>
   </div>
-  <div class="contentWrapper" v-if="!isLoading">
-    <p class="label">Text:</p>
-    <div
-        ref="editor"
-        class="noteEditor"
-        :class="{ disabled: isModalVisible }"
-        contenteditable="true"
-        v-if="note"
-        @input="onEditorInput"
-        @keydown="handleKeyDown"
-    ></div>
+  <div class="container mx-auto px-6 mt-8" v-if="!isLoading">
+    <div>
+      <p class="text-gray-700 text-sm font-medium mb-2 text-left">Text:</p>
+      <div
+          ref="editor"
+          contenteditable="true"
+          :class="{'bg-gray-100': isModalVisible}"
+          style="white-space: pre-wrap"
+          class="w-full h-64 p-4 text-gray-800 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500 overflow-y-auto text-left"
+          v-if="note"
+          @input="onEditorInput"
+          @keydown="handleKeyDown"
+      ></div>
+    </div>
   </div>
+
   <PageSpinner v-if="isLoading" />
 </template>
+
 
 <script setup lang="ts">
 import { onMounted, computed, ref } from 'vue';
@@ -176,7 +191,7 @@ const handleUserSelect = (user: User) => {
     range.setStart(range.startContainer, range.startOffset - 1);
     const mentionNode = document.createElement('span');
 
-    mentionNode.className = 'mention';
+    mentionNode.className = 'bg-blue-500 font-bold cursor-pointer rounded-md px-1 py-0.5 whitespace-nowrap text-white';
     mentionNode.textContent = `@${user.first_name} ${user.last_name}`;
     range.deleteContents();
 
@@ -234,75 +249,4 @@ onMounted(async () => {
   }
 });
 </script>
-
-<style scoped>
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 1rem;
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #ccc;
-}
-
-.titleWrapper {
-  margin: 32px;
-}
-
-.label {
-  display: flex;
-  margin: 0 0 8px 0;
-}
-
-.titleInput {
-  font-size: 16px;
-  resize: none;
-  outline: none;
-  border: 1px solid #ccc;
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
-  padding: 16px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.contentWrapper {
-  margin: 0 32px 32px;
-}
-
-.noteEditor {
-  display: block;
-  text-align: start;
-  box-sizing: border-box;
-  width: 100%;
-  height: 400px;
-  padding: 16px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  outline: none;
-  background-color: white;
-}
-
-.noteEditor:empty:before {
-  content: attr(placeholder);
-  color: #aaa;
-  pointer-events: none;
-}
-
-.disabled {
-  background-color: #f5f5f5;
-  pointer-events: none;
-  user-select: none;
-}
-
-.actionButtons {
-  display: flex;
-  gap: 16px;
-}
-
-</style>
 

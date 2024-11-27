@@ -1,12 +1,35 @@
 <template>
-  <header class="header">
-    <h1>Notes</h1>
-    <button @click="addNote">Add Note</button>
-  </header>
-  <ErrorMessage :errorMessage="errorMessage"/>
-  <NotesListSpinner v-if="isLoading && !errorMessage"/>
-  <div v-if="!errorMessage && !isLoading" class="notesList">
-    <NoteCard v-for="note in notes" :key="note.id" :note="note" @click="goToNote(note.id)" />
+  <div class="min-h-screen bg-gradient-to-r from-blue-50 to-blue-100 pb-32">
+    <!-- Header -->
+    <header class="sticky top-0 bg-white shadow-md border-b border-gray-200 z-30">
+      <div class="container mx-auto flex justify-between items-center py-4 px-6">
+        <h1 class="text-3xl font-extrabold text-blue-600 tracking-wide">Notes</h1>
+        <button
+            @click="addNote"
+            class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2"
+        >
+          Add Note
+        </button>
+      </div>
+    </header>
+    <div v-if="errorMessage" class="container mx-auto px-6 mt-6">
+      <ErrorMessage :errorMessage="errorMessage" />
+    </div>
+    <div v-if="isLoading && !errorMessage" class="flex items-center justify-center mt-12">
+      <NotesListSpinner />
+    </div>
+    <div
+        v-if="!errorMessage && !isLoading"
+        class="container mx-auto px-6 mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+    >
+      <NoteCard
+          v-for="note in notes"
+          :key="note.id"
+          :note="note"
+          class="transition-transform transform hover:scale-105"
+          @click="goToNote(note.id)"
+      />
+    </div>
   </div>
 </template>
 
@@ -48,22 +71,3 @@ onMounted(async () => {
   }
 });
 </script>
-
-<style scoped>
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 1rem;
-  background-color: #f5f5f5;
-  border-bottom: 1px solid #ccc;
-}
-
-.notesList {
-  margin: 0;
-  padding: 32px 16px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-gap: 24px;
-}
-</style>
