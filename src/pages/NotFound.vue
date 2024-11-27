@@ -1,27 +1,18 @@
 <template>
-  <div class="page-not-found">
-    <h1>404</h1>
-    <p>Page not found</p>
-    <button onclick="window.location.href='/'">Go to Homepage</button>
+  <div class="flex flex-col items-center justify-center min-h-screen bg-gray-50 text-gray-700">
+    <h1 class="text-9xl font-extrabold text-red-500">404</h1>
+    <p class="text-xl mt-4">Page not found</p>
+    <button
+        class="mt-6 px-6 py-2 bg-blue-500 text-white font-medium rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring focus:ring-blue-300"
+        @click="goToHome"
+    >
+      Go to Homepage
+    </button>
   </div>
 </template>
 
-<style scoped>
-.page-not-found {
-  text-align: center;
-}
-
-.page-not-found h1 {
-  font-size: 6rem;
-  font-weight: bold;
-  color: #ff6b6b; /* Bright red for the error code */
-  margin: 0;
-}
-
-.page-not-found p {
-  font-size: 1.5rem;
-  color: #555; /* Neutral secondary text */
-  margin: 1rem 0;
-}
-
-</style>
+<script setup>
+const goToHome = () => {
+  window.location.href = '/';
+};
+</script>

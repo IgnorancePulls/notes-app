@@ -15,10 +15,10 @@ const routes = [
         component: EditNotePage,
     },
     {
-        path: '/not-found',
-        name: 'NotFound',
-        component: NotFound
-    }
+        path: "/:pathMatch(.*)*",
+        name: "not-found",
+        component: NotFound,
+    },
 ];
 
 const router = createRouter({

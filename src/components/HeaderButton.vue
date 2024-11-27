@@ -1,12 +1,16 @@
 <template>
   <button
-      class="button"
+      class="inline-flex items-center justify-center px-4 py-2 text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 active:bg-blue-800 disabled:bg-gray-300 disabled:cursor-not-allowed"
       :disabled="loading || disabled"
   >
-    <span v-if="loading" class="spinner"></span>
+    <span
+        v-if="loading"
+        class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"
+    ></span>
     <slot />
   </button>
 </template>
+
 
 <script setup>
 import { defineProps } from 'vue';
@@ -22,23 +26,3 @@ defineProps({
   },
 });
 </script>
-
-<style scoped>
-.spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid #fff;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 0.6s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-</style>
