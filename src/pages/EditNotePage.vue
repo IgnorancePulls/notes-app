@@ -7,13 +7,14 @@
   <header class="header">
     <h1>Edit Note</h1>
     <div class="actionButtons">
-      <HeadeButton :loading="isNoteSaving" :disabled="isNoteSaving" @click="saveNote">
+      <HeaderButton :loading="isNoteSaving" :disabled="isNoteSaving" @click="saveNote">
         Save note
-      </HeadeButton>
+      </HeaderButton>
       <button @click="goBack">Back</button>
     </div>
   </header>
-  <div class="titleWrapper">
+  <ErrorMessage :errorMessage="errorMessage"/>
+  <div class="titleWrapper" v-if="!isLoading">
     <p class="label">Title:</p>
     <input
         class="titleInput"
@@ -22,7 +23,7 @@
         @input="handleTitleInput"
     />
   </div>
-  <div class="contentWrapper">
+  <div class="contentWrapper" v-if="!isLoading">
     <p class="label">Text:</p>
     <div
         ref="editor"
@@ -37,39 +38,59 @@
   <PageSpinner v-if="isLoading" />
 </template>
 
-
 <script setup lang="ts">
 import { onMounted, computed, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useNoteStore } from "@/store/useNoteStore.ts";
 import { debounce } from "@/utils/debounce.ts";
 import PageSpinner from "@/components/PageSpinner.vue";
-import HeadeButton from "@/components/HeadeButton.vue";
+import HeaderButton from "@/components/HeaderButton.vue";
 import UserSearchModal from "@/components/UserSearchModal.vue";
+import { FAILED_TO_UPDATE_NOTE, FAILED_TO_UPDATE_NOTE_TITLE, FAILED_TO_LOAD_NOTE } from "@/constants/error-messages.ts";
+
+import ErrorMessage from "@/components/ErrorMessage.vue";
+
 import { User } from "@/types/user.ts";
 import { getMentionNoteToDelete } from "@/utils/get-mention-note-to-delete.ts";
 
 const noteStore = useNoteStore();
 const router = useRouter();
 const route = useRoute();
-const noteId = route.params.id;
+const noteId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
 
-const editor = ref<HTMLDivElement | null>(null); // Reference to the contenteditable div
-const isModalVisible = ref(false); // Modal visibility
-const note = computed(() => noteStore.currentNote); // Current note
-const isLoading = computed(() => noteStore.isLoading); // Loading state
-const isNoteSaving = computed(() => noteStore.isNoteSaving); // Saving state
-const cursorPosition = ref<Range>(0); // Cursor position
+const editor = ref<HTMLDivElement | null>(null);
+const isModalVisible = ref(false);
+const note = computed(() => noteStore.currentNote);
+const isLoading = computed(() => noteStore.isLoading);
+const isNoteSaving = computed(() => noteStore.isNoteSaving);
+const cursorPosition = ref<Range>(0);
+const errorMessage = ref<string>('')
 
+
+const handleNoteUpdate = () => {
+  if(note.value && editor.value) {
+    try {
+      errorMessage.value = ''
+      noteStore.updateCurrentNote({ text: note.value.text })
+      note.value.text = editor.value.innerHTML;
+    } catch (e) {
+      errorMessage.value = FAILED_TO_UPDATE_NOTE;
+    }
+  }
+}
 
 const saveCursorPosition = () => {
   const selection = window.getSelection();
-  if (!selection || selection.rangeCount === 0) return;
+  if(!selection || selection.rangeCount === 0) {
+    return;
+  }
   cursorPosition.value = selection.getRangeAt(0).cloneRange();
 };
 
 const restoreCursorPosition = () => {
-  if (!cursorPosition || !editor.value) return;
+  if (!cursorPosition || !editor.value) {
+    return;
+  }
   const selection = window.getSelection();
   if (selection) {
     selection.removeAllRanges();
@@ -138,15 +159,7 @@ const handleBackSpace = (event: KeyboardEvent) => {
       selection.removeAllRanges();
       selection.addRange(range);
 
-      if(note.value && editor.value) {
-        try {
-          noteStore.updateCurrentNote({ text: note.value.text })
-          note.value.text = editor.value.innerHTML;
-        } catch (e) {
-          console.error('Failed to update the note text:', e);
-          //toDo handle error
-        }
-      }
+      handleNoteUpdate();
     }
   }
 }
@@ -174,47 +187,32 @@ const handleUserSelect = (user: User) => {
     range.insertNode(textNode);
     range.collapse(false);
 
-    try {
-      noteStore.updateCurrentNote({ text: note.value.text })
-      note.value.text = editor.value.innerText;
-    } catch (error) {
-      console.log(error);
-      //ToDo handle error
-    }
+    handleNoteUpdate();
   }
 
-  isModalVisible.value = false; // Close the modal
+  isModalVisible.value = false;
 };
 
 const onEditorInput = debounce(() => {
-  if (!editor.value || !note.value) return;
-
-  note.value.text = editor.value.innerHTML;
-
-  try {
-    noteStore.updateCurrentNote({ text: note.value.text })
-  } catch (error) {
-    //toDo: handle error
-    console.error('Failed to update the note text:', error);
-  }
+  handleNoteUpdate();
 }, 500);
 
-// Debounced title input handler
-const handleTitleInput = debounce(async (event: InputEvent) => {
+const handleTitleInput = debounce(async (event: Event) => {
   const title = (event.target as HTMLInputElement).value;
   try {
+    errorMessage.value = ''
     await noteStore.updateCurrentNote({ title });
   } catch (error) {
-    console.error('Failed to update the note title:', error);
+    errorMessage.value = FAILED_TO_UPDATE_NOTE_TITLE;
   }
 }, 500);
 
-// Save the current note
 const saveNote = async () => {
   try {
+    errorMessage.value = '';
     await noteStore.saveCurrentNote();
   } catch (error) {
-    console.error('Failed to save the note:', error);
+    errorMessage.value = FAILED_TO_UPDATE_NOTE;
   }
 };
 
@@ -224,20 +222,18 @@ const initializeEditorContent = () => {
   }
 };
 
-// Load the note on component mount
 onMounted(async () => {
   try {
     if (noteId) {
+      errorMessage.value = '';
       await noteStore.loadNote(noteId);
       initializeEditorContent();
     }
   } catch (error) {
-    //ToDo handle error
-    console.error('Failed to load the note:', error);
+    await router.push('/not-found');
   }
 });
 </script>
-
 
 <style scoped>
 .header {
@@ -292,15 +288,15 @@ onMounted(async () => {
 }
 
 .noteEditor:empty:before {
-  content: attr(placeholder); /* Use the placeholder attribute */
+  content: attr(placeholder);
   color: #aaa;
-  pointer-events: none; /* Ensure the placeholder is non-interactive */
+  pointer-events: none;
 }
 
 .disabled {
-  background-color: #f5f5f5; /* Grey out the background */
-  pointer-events: none; /* Prevent interaction */
-  user-select: none; /* Prevent text selection */
+  background-color: #f5f5f5;
+  pointer-events: none;
+  user-select: none;
 }
 
 .actionButtons {

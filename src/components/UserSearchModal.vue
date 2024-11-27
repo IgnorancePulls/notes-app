@@ -24,7 +24,6 @@
   </div>
 </template>
 
-
 <script setup lang="ts">
 import {computed, onMounted, ref, watch, nextTick} from 'vue';
 

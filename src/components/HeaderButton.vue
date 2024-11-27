@@ -9,17 +9,16 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import { defineProps } from 'vue';
 
-// Props for the button
 defineProps({
   loading: {
     type: Boolean,
-    default: false, // Controls the loading state
+    default: false,
   },
   disabled: {
     type: Boolean,
-    default: false, // Disables the button when true
+    default: false,
   },
 });
 </script>
