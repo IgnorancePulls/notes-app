@@ -49,13 +49,8 @@ const notes = computed(() =>  [...notesStore.notes].sort((a, b) => new Date(b.la
 const isLoading = computed(() => notesStore.isLoading);
 
 const addNote = async () => {
-  try {
-    errorMessage.value = '';
-    const id = await notesStore.createNewNote();
-    await router.push(`/note/${id}`);
-  } catch (e) {
-    errorMessage.value = 'Failed to add note';
-  }
+  const id = await notesStore.createNewNote();
+  await router.push(`/note/${id}`);
 }
 
 const goToNote = async(id: string) => {
@@ -63,11 +58,6 @@ const goToNote = async(id: string) => {
 }
 
 onMounted(async () => {
-  try {
-    errorMessage.value = '';
-    await notesStore.loadNotes();
-  } catch (e) {
-    errorMessage.value = 'Failed to load notes';
-  }
+  await notesStore.loadNotes();
 });
 </script>
