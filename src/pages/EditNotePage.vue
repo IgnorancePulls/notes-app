@@ -79,18 +79,13 @@ const note = computed(() => noteStore.currentNote);
 const isLoading = computed(() => noteStore.isLoading);
 const isNoteSaving = computed(() => noteStore.isNoteSaving);
 const cursorPosition = ref<Range>(0);
-const errorMessage = ref<string>('')
+const errorMessage = computed(() => noteStore.errorMessage);
 
 
 const handleNoteUpdate = () => {
   if(note.value && editor.value) {
-    try {
-      errorMessage.value = ''
-      noteStore.updateCurrentNote({ text: note.value.text })
-      note.value.text = editor.value.innerHTML;
-    } catch (e) {
-      errorMessage.value = FAILED_TO_UPDATE_NOTE;
-    }
+    noteStore.updateCurrentNote({ text: note.value.text })
+    note.value.text = editor.value.innerHTML;
   }
 }
 
@@ -191,7 +186,7 @@ const handleUserSelect = (user: User) => {
     range.setStart(range.startContainer, range.startOffset - 1);
     const mentionNode = document.createElement('span');
 
-    mentionNode.className = 'bg-blue-500 font-bold cursor-pointer rounded-md px-1 py-0.5 whitespace-nowrap text-white';
+    mentionNode.className = 'mention bg-blue-500 font-bold cursor-pointer rounded-md px-1 py-0.5 whitespace-nowrap text-white';
     mentionNode.textContent = `@${user.first_name} ${user.last_name}`;
     range.deleteContents();
 
@@ -214,21 +209,12 @@ const onEditorInput = debounce(() => {
 
 const handleTitleInput = debounce(async (event: Event) => {
   const title = (event.target as HTMLInputElement).value;
-  try {
-    errorMessage.value = ''
-    await noteStore.updateCurrentNote({ title });
-  } catch (error) {
-    errorMessage.value = FAILED_TO_UPDATE_NOTE_TITLE;
-  }
+  await noteStore.updateCurrentNote({ title });
+
 }, 500);
 
 const saveNote = async () => {
-  try {
-    errorMessage.value = '';
-    await noteStore.saveCurrentNote();
-  } catch (error) {
-    errorMessage.value = FAILED_TO_UPDATE_NOTE;
-  }
+  await noteStore.saveCurrentNote();
 };
 
 const initializeEditorContent = () => {
@@ -240,7 +226,6 @@ const initializeEditorContent = () => {
 onMounted(async () => {
   try {
     if (noteId) {
-      errorMessage.value = '';
       await noteStore.loadNote(noteId);
       initializeEditorContent();
     }

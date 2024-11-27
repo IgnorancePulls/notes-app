@@ -4,40 +4,49 @@ import { ref } from "vue";
 
 import { Note } from "../types/note.ts";
 import { fetchNotes, createNote } from "@/api/notes.ts";
+import { FAILED_TO_CREATE_NOTE, FAILED_TO_LOAD_NOTES } from "@/constants/error-messages.ts";
 
 const useNotesListStore = defineStore('notesList', () => {
     const notes = ref<Note[]>([]);
     const isLoading = ref<boolean>(false);
+    const errorMessage = ref<string>('');
 
-    const createNewNote = async (): Promise<string> => {
+    const createNewNote = async (): Promise<string| undefined> => {
         const newNote = {
             text: '',
             last_updated_at: new Date()
         }
 
-        const res = await createNote(newNote);
-
-        notes.value.push(res);
-        return res.id;
+        try {
+            isLoading.value = true;
+            errorMessage.value = ''
+            const res = await createNote(newNote);
+            notes.value.push(res);
+            isLoading.value = false;
+            return res.id;
+        } catch (e) {
+            isLoading.value = false;
+            errorMessage.value = FAILED_TO_CREATE_NOTE;
+        }
     }
-
-    const updateNote = (id: string, text: string): void => {
-        const note = notes.value.find((n) => n.id === id);
-        if (note) note.text = text;
-    };
-
     const loadNotes = async (): Promise<void> => {
-        isLoading.value = true;
-        notes.value = await fetchNotes();
-        isLoading.value = false;
+        try {
+            isLoading.value = true;
+            errorMessage.value = ''
+            notes.value = await fetchNotes();
+            isLoading.value = false;
+        } catch (e) {
+            isLoading.value = false;
+            errorMessage.value = FAILED_TO_LOAD_NOTES;
+        }
     };
 
     return {
         notes,
-        updateNote,
         loadNotes,
         createNewNote,
-        isLoading
+        isLoading,
+        errorMessage
     };
 });
 

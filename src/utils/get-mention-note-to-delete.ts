@@ -1,6 +1,6 @@
 const getMentionNoteToDelete = (range: Range): HTMLElement | null => {
-    const node = range.startContainer; // Get the node where the cursor is located
-    const offset = range.startOffset; // Get the cursor position within the node
+    const node = range.startContainer;
+    const offset = range.startOffset;
 
     // Check if the cursor is inside a mention
     if (
