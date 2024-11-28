@@ -3,8 +3,8 @@ import { defineStore } from 'pinia';
 import { ref } from "vue";
 
 import { Note } from "../types/note.ts";
-import { fetchNotes, createNote } from "@/api/notes.ts";
-import { FAILED_TO_CREATE_NOTE, FAILED_TO_LOAD_NOTES } from "@/constants/error-messages.ts";
+import { fetchNotes, createNote, updateNote } from "@/api/notes.ts";
+import { FAILED_TO_CREATE_NOTE, FAILED_TO_LOAD_NOTES, FAILED_TO_DELETE_NOTE } from "@/constants/error-messages.ts";
 
 const useNotesListStore = defineStore('notesList', () => {
     const notes = ref<Note[]>([]);
@@ -41,12 +41,40 @@ const useNotesListStore = defineStore('notesList', () => {
         }
     };
 
+    const deleteNote = async (id: string) => {
+        notes.value = notes.value.map((note) => {
+            if (note.id === id) {
+                return { ...note, is_deleted: true };
+            }
+            return note;
+        });
+
+        const noteToUpdate = notes.value.find(note => note.id === id);
+
+        if (noteToUpdate) {
+            try {
+                errorMessage.value = '';
+                isLoading.value = true;
+                await updateNote({
+                    ...noteToUpdate,
+                    is_deleted: true,
+                });
+                isLoading.value = false;
+            } catch (error) {
+                isLoading.value = false;
+                errorMessage.value = FAILED_TO_DELETE_NOTE;
+            }
+        }
+    };
+
+
     return {
         notes,
         loadNotes,
         createNewNote,
         isLoading,
-        errorMessage
+        errorMessage,
+        deleteNote
     };
 });
 
