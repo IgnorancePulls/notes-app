@@ -1,29 +1,30 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import NotesList from '@/pages/NotesList.vue';
+
 import EditNotePage from '@/pages/EditNotePage.vue';
-import NotFound from "@/pages/NotFound.vue";
+import NotesList from '@/pages/NotesList.vue';
+import NotFound from '@/pages/NotFound.vue';
 
 const routes = [
-    {
-        path: '/',
-        name: 'NotesList',
-        component: NotesList,
-    },
-    {
-        path: '/note/:id',
-        name: 'EditNotePage',
-        component: EditNotePage,
-    },
-    {
-        path: "/:pathMatch(.*)*",
-        name: "not-found",
-        component: NotFound,
-    },
+  {
+    path: '/',
+    name: 'NotesList',
+    component: NotesList,
+  },
+  {
+    path: '/note/:id',
+    name: 'EditNotePage',
+    component: EditNotePage,
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: NotFound,
+  },
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
-    routes,
+  history: createWebHistory(),
+  routes,
 });
 
 export default router;

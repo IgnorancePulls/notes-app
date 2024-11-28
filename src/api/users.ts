@@ -1,12 +1,12 @@
-import { User } from "@/types/user.ts";
-import apiClient from "@/api/axios.ts";
+import apiClient from '@/api/axios.ts';
+import { User } from '@/types/user.ts';
 
 const fetchUsers = async (): Promise<User[]> => {
-    const { data } = await apiClient.get(``, {
-        baseURL: 'https://challenge.surfe.com/users',
-    });
+  const { data } = await apiClient.get('', {
+    baseURL: 'https://challenge.surfe.com/users',
+  });
 
-    return data;
+  return data;
 };
 
 export { fetchUsers };
