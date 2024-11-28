@@ -27,7 +27,6 @@
           :key="note.id"
           :note="note"
           class="transition-transform transform hover:scale-105"
-          @click="goToNote(note.id)"
       />
     </div>
   </div>
@@ -45,15 +44,15 @@ const notesStore = useNotesListStore();
 const router = useRouter();
 const errorMessage = ref<string>('');
 
-const notes = computed(() =>  [...notesStore.notes].sort((a, b) => new Date(b.last_updated_at).getTime() -  new Date(a.last_updated_at).getTime()));
+const notes = computed(() =>
+    [...notesStore.notes]
+        .filter(note => !note.is_deleted)
+        .sort((a, b) => new Date(b.last_updated_at).getTime() - new Date(a.last_updated_at).getTime()));
+
 const isLoading = computed(() => notesStore.isLoading);
 
 const addNote = async () => {
   const id = await notesStore.createNewNote();
-  await router.push(`/note/${id}`);
-}
-
-const goToNote = async(id: string) => {
   await router.push(`/note/${id}`);
 }
 

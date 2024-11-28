@@ -26,7 +26,6 @@ const useNoteStore = defineStore('note', () => {
             await updateNote(updatedNote);
             isNoteSaving.value = false;
         } catch (e) {
-            console.log('catch')
             isNoteSaving.value = false;
             errorMessage.value = FAILED_TO_UPDATE_NOTE;
         }

@@ -12,6 +12,12 @@
           Save Note
         </HeaderButton>
         <button
+            @click="handleDeleteNote"
+            class="flex items-center gap-2 bg-red-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-red-700 hover:shadow-lg active:bg-red-800 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed"
+        >
+          Delete
+        </button>
+        <button
             @click="goBack"
             class="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-700 hover:shadow-lg active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
@@ -20,7 +26,6 @@
       </div>
     </div>
   </header>
-
     <ErrorMessage :errorMessage="errorMessage" />
   <div class="container mx-auto px-6 mt-8" v-if="!isLoading">
     <div>
@@ -61,7 +66,6 @@ import { debounce } from "@/utils/debounce.ts";
 import PageSpinner from "@/components/PageSpinner.vue";
 import HeaderButton from "@/components/HeaderButton.vue";
 import UserSearchModal from "@/components/UserSearchModal.vue";
-import { FAILED_TO_UPDATE_NOTE, FAILED_TO_UPDATE_NOTE_TITLE, FAILED_TO_LOAD_NOTE } from "@/constants/error-messages.ts";
 
 import ErrorMessage from "@/components/ErrorMessage.vue";
 
@@ -81,11 +85,18 @@ const isNoteSaving = computed(() => noteStore.isNoteSaving);
 const cursorPosition = ref<Range>(0);
 const errorMessage = computed(() => noteStore.errorMessage);
 
-
-const handleNoteUpdate = () => {
+const handleNoteUpdate = async () => {
   if(note.value && editor.value) {
-    noteStore.updateCurrentNote({ text: note.value.text })
     note.value.text = editor.value.innerHTML;
+    await noteStore.updateCurrentNote({ text: note.value.text });
+  }
+}
+
+const handleDeleteNote = async () => {
+  if(note.value && editor.value) {
+    note.value.text = editor.value.innerHTML;
+    await noteStore.updateCurrentNote({ is_deleted: true });
+    goBack();
   }
 }
 
@@ -132,7 +143,7 @@ const handleMention = () => {
   const range = selection?.getRangeAt(0);
   const textBeforeCursor = range?.startContainer.textContent?.slice(0, range.startOffset);
 
-  if (textBeforeCursor?.endsWith(' ')) {
+  if (textBeforeCursor?.endsWith(' ') || !textBeforeCursor) {
     setTimeout(() => {
       saveCursorPosition();
       isModalVisible.value = true;
@@ -141,7 +152,7 @@ const handleMention = () => {
   }
 }
 
-const handleBackSpace = (event: KeyboardEvent) => {
+const handleBackSpace = async (event: KeyboardEvent) => {
   if (event.key === 'Backspace') {
 
     const selection = window.getSelection();
@@ -169,12 +180,12 @@ const handleBackSpace = (event: KeyboardEvent) => {
       selection.removeAllRanges();
       selection.addRange(range);
 
-      handleNoteUpdate();
+      await handleNoteUpdate();
     }
   }
 }
 
-const handleUserSelect = (user: User) => {
+const handleUserSelect = async (user: User) => {
   if (!editor.value || !note.value) return;
   editor.value.focus();
   restoreCursorPosition();
@@ -195,16 +206,17 @@ const handleUserSelect = (user: User) => {
     range.setStartAfter(mentionNode);
     range.setEndAfter(mentionNode);
     range.insertNode(textNode);
+
     range.collapse(false);
 
-    handleNoteUpdate();
+    await handleNoteUpdate();
   }
 
   isModalVisible.value = false;
 };
 
-const onEditorInput = debounce(() => {
-  handleNoteUpdate();
+const onEditorInput = debounce(async () => {
+  await handleNoteUpdate();
 }, 500);
 
 const handleTitleInput = debounce(async (event: Event) => {
